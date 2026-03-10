@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useTranslation } from './useTranslation';
+
 const props = defineProps<{
   targetWord: string
   sentence: string
@@ -7,7 +9,11 @@ const props = defineProps<{
 
 const front = ref(props.targetWord)
 const back = ref(props.sentence)
-const translation = ref('')
+const {translation, loading, translate} = useTranslation()
+
+onMounted(() => {
+  translate(props.sentence)
+})
 </script>
 
 <template>
@@ -23,10 +29,16 @@ const translation = ref('')
       <textarea v-model="back" rows="3" />
     </div>
 
-    <div>
+   <div>
       <label>Translation</label>
-      <textarea v-model="translation" rows="3" placeholder="Add you translation here"/>
+      <textarea
+        v-model="translation"
+        rows="3"
+        :placeholder="loading ? 'Translating...' : 'Translation'"
+        :disabled="loading"
+      />
     </div>
+
 
     <button>Export to Anki</button>
   </div>
@@ -48,6 +60,10 @@ input, textarea {
   border-radius: 4px;
   font-size: 1rem;
 }
+textarea:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+}
 button {
   padding: 10px 20px;
   background-color: #ffd700;
@@ -60,3 +76,4 @@ button:hover {
   background-color: #f0c800;
 }
 </style>
+
