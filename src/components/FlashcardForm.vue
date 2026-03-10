@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useTranslation } from './useTranslation';
-
+import { useAnki } from './useAnki';
 const props = defineProps<{
   targetWord: string
   sentence: string
@@ -10,10 +10,30 @@ const props = defineProps<{
 const front = ref(props.targetWord)
 const back = ref(props.sentence)
 const {translation, loading, translate} = useTranslation()
+const {addNote} = useAnki()
+const exporting = ref(false)
+const success = ref(false)
+const error = ref('')
+
+
 
 onMounted(() => {
   translate(props.sentence)
 })
+
+async function handleExport() {
+  exporting.value = true
+  error.value = ''
+  success.value = false
+  try {
+    await addNote(front.value, back.value, translation.value)
+    success.value = true
+  } catch (e) {
+    error.value = 'Failed to export, make sure Anki is open with AnkiConnect installed'
+  } finally {
+    exporting.value = false
+  }
+}
 </script>
 
 <template>
@@ -40,8 +60,15 @@ onMounted(() => {
     </div>
 
 
-    <button>Export to Anki</button>
+
+    <p v-if="success" style="color: green">Card added to Anki!</p>
+    <p v-if="error" style="color: red;">{{ error }}</p>
+    <button @click="handleExport" :disabled="exporting || loading">
+      {{ exporting ? 'Exporting....' : 'Export to Anki' }}
+    </button>
   </div>
+
+
 </template>
 
 <style scoped>
@@ -74,6 +101,10 @@ button {
 }
 button:hover {
   background-color: #f0c800;
+}
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 </style>
 
