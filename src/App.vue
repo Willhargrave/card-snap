@@ -1,0 +1,42 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import TextInput from './components/TextInput.vue'
+import WordSelector from './components/WordSelector.vue'
+import FlashcardForm from './components/FlashcardForm.vue'
+
+
+type Step = 'input' | 'select' | 'form'
+const currentStep = ref('input' as Step)
+const japaneseText = ref('')
+const targetWord = ref('')
+const sentence = ref('')
+
+function handleTextSubmit(text: string) {
+  japaneseText.value = text
+  currentStep.value = 'select'
+}
+
+function handleWordSelect(word: string, fullSentence: string) {
+  targetWord.value = word
+  sentence.value = fullSentence
+  currentStep.value = 'form'
+}
+
+</script>
+
+<template>
+  <h1>Anki Helper</h1>
+  <p>Language Reader Tool and card maker</p>
+  <TextInput v-if="currentStep === 'input'" @submit="handleTextSubmit" />
+  <WordSelector
+  v-if="currentStep === 'select'"
+  :text="japaneseText"
+  @selectWord="handleWordSelect"
+  ></WordSelector>
+  <FlashcardForm
+  v-if="currentStep === 'form'"
+  :targetWord="targetWord"
+  :sentence="sentence" />
+</template>
+
+<style scoped></style>

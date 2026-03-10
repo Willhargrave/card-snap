@@ -1,0 +1,62 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+const props = defineProps<{
+  targetWord: string
+  sentence: string
+}>()
+
+const front = ref(props.targetWord)
+const back = ref(props.sentence)
+const translation = ref('')
+</script>
+
+<template>
+  <div>
+    <h2>Flashcard Preview</h2>
+    <div>
+      <label>Front (Target Word)</label>
+      <input v-model="front" type="text" />
+    </div>
+
+    <div>
+      <label>Back (sentence)</label>
+      <textarea v-model="back" rows="3" />
+    </div>
+
+    <div>
+      <label>Translation</label>
+      <textarea v-model="translation" rows="3" placeholder="Add you translation here"/>
+    </div>
+
+    <button>Export to Anki</button>
+  </div>
+</template>
+
+<style scoped>
+div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+label {
+  font-weight: bold;
+}
+input, textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+button {
+  padding: 10px 20px;
+  background-color: #ffd700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+button:hover {
+  background-color: #f0c800;
+}
+</style>
