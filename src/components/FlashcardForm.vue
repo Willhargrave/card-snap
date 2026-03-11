@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useTranslation } from './useTranslation';
 import { useAnki } from './useAnki';
 import { useJisho } from './useJisho';
-
+import LoadingSpinner from './LoadingSpinner.vue';
 const props = defineProps<{
   targetWord: string
   sentence: string
@@ -62,7 +62,11 @@ async function handleExport() {
 </script>
 
 <template>
-  <div class="form-wrapper">
+  <div v-if="translationLoading || jishoLoading">
+    <LoadingSpinner />
+  </div>
+
+  <div v-else class="form-wrapper">
     <h2>Flashcard Preview</h2>
 
     <div v-for="field in fields" :key="field.label" class="field">
