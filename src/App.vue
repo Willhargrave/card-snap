@@ -33,11 +33,14 @@ function handleWordSelect(word: string, fullSentence: string) {
   v-if="currentStep === 'select'"
   :text="japaneseText"
   @selectWord="handleWordSelect"
+  @back="currentStep = 'input'"
   ></WordSelector>
   <FlashcardForm
   v-if="currentStep === 'form'"
   :targetWord="targetWord"
-  :sentence="sentence" />
+  :sentence="sentence"
+  @back="currentStep = 'select'"
+/>
 </template>
 
 <style scoped></style>

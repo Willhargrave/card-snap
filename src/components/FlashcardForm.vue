@@ -9,6 +9,10 @@ const props = defineProps<{
   sentence: string
 }>()
 
+const emit = defineEmits<{
+  back: []
+}>()
+
 type FieldLocation = 'front' | 'back' | 'exclude'
 
 const front = ref(props.targetWord)
@@ -53,6 +57,8 @@ async function handleExport() {
     exporting.value = false
   }
 }
+
+
 </script>
 
 <template>
@@ -76,6 +82,8 @@ async function handleExport() {
 
     <p v-if="success" style="color: green">Card added to Anki successfully!</p>
     <p v-if="error" style="color: red">{{ error }}</p>
+
+    <button class="back-btn" @click="emit('back')">← Back</button>
 
     <button class="export-btn" @click="handleExport" :disabled="exporting || translationLoading || jishoLoading">
       {{ exporting ? 'Exporting...' : 'Export to Anki' }}
@@ -144,5 +152,18 @@ textarea:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+.back-btn {
+  padding: 10px 20px;
+  background: rgb(242, 240, 240);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.back-btn:hover {
+  border-color: #999;
+}
+
 </style>
 

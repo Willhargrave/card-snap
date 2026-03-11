@@ -7,7 +7,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   selectWord: [word: string, sentence: string]
+  back: []
 }>()
+
+
 
 const selectedWord = ref('')
 
@@ -39,6 +42,8 @@ function handleWordClick(word: string) {
       </span>
     </div>
   </div>
+  <button class="back-btn" @click="emit('back')">← Back</button>
+
 </template>
 
 <style scoped>
