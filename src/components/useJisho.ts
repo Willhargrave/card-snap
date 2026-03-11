@@ -23,3 +23,4 @@ export function useJisho() {
 
   return { reading, meaning, loading, lookupWord }
 }
+

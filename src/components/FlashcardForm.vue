@@ -2,6 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { useTranslation } from './useTranslation';
 import { useAnki } from './useAnki';
+import { useJisho } from './useJisho';
+
 const props = defineProps<{
   targetWord: string
   sentence: string
@@ -9,7 +11,8 @@ const props = defineProps<{
 
 const front = ref(props.targetWord)
 const back = ref(props.sentence)
-const {translation, loading, translate} = useTranslation()
+const {translation, loading: translationLoading, translate} = useTranslation()
+const {reading, meaning, loading: jishoLoading, lookupWord} = useJisho()
 const {addNote} = useAnki()
 const exporting = ref(false)
 const success = ref(false)
@@ -19,6 +22,7 @@ const error = ref('')
 
 onMounted(() => {
   translate(props.sentence)
+  lookupWord(props.targetWord)
 })
 
 async function handleExport() {
@@ -26,26 +30,47 @@ async function handleExport() {
   error.value = ''
   success.value = false
   try {
-    await addNote(front.value, back.value, translation.value)
+    await addNote(front.value, reading.value, meaning.value, back.value, translation.value)
     success.value = true
   } catch (e) {
-    error.value = 'Failed to export, make sure Anki is open with AnkiConnect installed'
+    error.value = 'Failed to export. Make sure Anki is open with AnkiConnect installed.'
   } finally {
     exporting.value = false
   }
 }
+
 </script>
 
 <template>
   <div>
     <h2>Flashcard Preview</h2>
     <div>
-      <label>Front (Target Word)</label>
+      <label>Target Word</label>
       <input v-model="front" type="text" />
     </div>
+  <div>
+      <label>Reading</label>
+      <input
+        v-model="reading"
+        type="text"
+        :placeholder="jishoLoading ? 'Loading...' : 'Reading'"
+        :disabled="jishoLoading"
+      />
+  </div>
+
+  <div>
+      <label>Meaning</label>
+      <input
+      v-model="meaning"
+      type="text"
+      :placeholder="jishoLoading ? 'Loading...' : 'Meaning'"
+      :disabled="jishoLoading"
+    />
+  </div>
+
 
     <div>
-      <label>Back (sentence)</label>
+      <label>Sentence</label>
       <textarea v-model="back" rows="3" />
     </div>
 
@@ -54,8 +79,8 @@ async function handleExport() {
       <textarea
         v-model="translation"
         rows="3"
-        :placeholder="loading ? 'Translating...' : 'Translation'"
-        :disabled="loading"
+        :placeholder="translationLoading ? 'Translating...' : 'Translation'"
+        :disabled="translationLoading"
       />
     </div>
 
@@ -63,8 +88,8 @@ async function handleExport() {
 
     <p v-if="success" style="color: green">Card added to Anki!</p>
     <p v-if="error" style="color: red;">{{ error }}</p>
-    <button @click="handleExport" :disabled="exporting || loading">
-      {{ exporting ? 'Exporting....' : 'Export to Anki' }}
+    <button @click="handleExport" :disabled="exporting || translationLoading || jishoLoading">
+      {{ exporting ? 'Exporting...' : 'Export to Anki' }}
     </button>
   </div>
 

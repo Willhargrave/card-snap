@@ -1,7 +1,15 @@
 export function useAnki() {
-  async function addNote(front: string, back: string, translation: string) {
-    try {
-      const body = JSON.stringify({
+  async function addNote(
+    front: string,
+    reading: string,
+    meaning: string,
+    back: string,
+    translation: string
+  ) {
+    const response = await fetch('http://localhost:8765', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         action: 'addNote',
         version: 6,
         params: {
@@ -9,8 +17,8 @@ export function useAnki() {
             deckName: 'Default',
             modelName: 'Basic',
             fields: {
-              Front: front,
-              Back: `${back}<br><br>${translation}`,
+              Front: `${front}<br><small>${reading}</small>`,
+              Back: `${meaning}<br><br>${back}<br><br>${translation}`,
             },
             options: {
               allowDuplicate: false,
@@ -18,26 +26,11 @@ export function useAnki() {
             tags: ['anki-helper'],
           },
         },
-      })
-
-      console.log('Sending to AnkiConnect:', body)
-
-      const response = await fetch('http://localhost:8765', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-      })
-
-      console.log('Response status:', response.status)
-      const data = await response.json()
-      console.log('Response data:', data)
-
-      if (data.error) throw new Error(data.error)
-      return data.result
-    } catch (e) {
-      console.error('AnkiConnect error:', e)
-      throw e
-    }
+      }),
+    })
+    const data = await response.json()
+    if (data.error) throw new Error(data.error)
+    return data.result
   }
 
   return { addNote }
