@@ -3,16 +3,17 @@ import { ref } from 'vue'
 import TextInput from './components/TextInput.vue'
 import WordSelector from './components/WordSelector.vue'
 import FlashcardForm from './components/FlashcardForm.vue'
-
+import { useTextCleanup } from './components/useTextCleanup'
 
 type Step = 'input' | 'select' | 'form'
 const currentStep = ref('input' as Step)
 const japaneseText = ref('')
 const targetWord = ref('')
 const sentence = ref('')
+const {cleanText} = useTextCleanup()
 
 function handleTextSubmit(text: string) {
-  japaneseText.value = text
+  japaneseText.value = cleanText(text)
   currentStep.value = 'select'
 }
 
