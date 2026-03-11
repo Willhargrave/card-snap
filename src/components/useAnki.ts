@@ -1,11 +1,5 @@
 export function useAnki() {
-  async function addNote(
-    front: string,
-    reading: string,
-    meaning: string,
-    back: string,
-    translation: string
-  ) {
+  async function addNote(front: string, back: string) {
     const response = await fetch('http://localhost:8765', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -16,13 +10,8 @@ export function useAnki() {
           note: {
             deckName: 'Default',
             modelName: 'Basic',
-            fields: {
-              Front: `${front}<br><small>${reading}</small>`,
-              Back: `${meaning}<br><br>${back}<br><br>${translation}`,
-            },
-            options: {
-              allowDuplicate: false,
-            },
+            fields: { Front: front, Back: back },
+            options: { allowDuplicate: false },
             tags: ['anki-helper'],
           },
         },
