@@ -15,4 +15,13 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+   server: {
+    proxy: {
+      '/jisho': {
+        target: 'https://jisho.org',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/jisho/, '')
+      }
+    }
+  }
 })
