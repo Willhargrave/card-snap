@@ -17,12 +17,11 @@ function handleTextSubmit(text: string) {
   currentStep.value = 'select'
 }
 
-function handleWordSelect(word: string, fullSentence: string) {
-  targetWord.value = word
+function handleWordsSelect(words: string[], fullSentence: string) {
+  targetWord.value = words.join('・')
   sentence.value = fullSentence
   currentStep.value = 'form'
 }
-
 </script>
 
 <template>
@@ -32,7 +31,7 @@ function handleWordSelect(word: string, fullSentence: string) {
   <WordSelector
   v-if="currentStep === 'select'"
   :text="japaneseText"
-  @selectWord="handleWordSelect"
+  @selectWords="handleWordsSelect"
   @back="currentStep = 'input'"
   ></WordSelector>
   <FlashcardForm

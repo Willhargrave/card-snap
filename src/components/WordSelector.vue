@@ -6,13 +6,13 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  selectWord: [word: string, sentence: string]
+  selectWords: [words: string[], sentence: string]
   back: []
 }>()
 
 
 
-const selectedWord = ref('')
+const selectedWords = ref<string[]>([])
 
 const punctuation = /^[。、！？「」『』（）・…\s]+$/
 
@@ -24,27 +24,47 @@ const words = computed(() => {
 })
 
 function handleWordClick(word: string) {
-  selectedWord.value = word
-  emit('selectWord', word, props.text)
+  if (selectedWords.value.includes(word)) {
+    selectedWords.value = selectedWords.value.filter((w) => w !== word)
+  } else {
+    selectedWords.value.push(word)
+  }
 }
+
+function handleProceed() {
+  if (selectedWords.value.length > 0) {
+    emit('selectWords', selectedWords.value, props.text)
+  }
+}
+
 </script>
 
 <template>
   <div>
-    <p>Click your target word:</p>
+    <p>Click your target words:</p>
     <div>
-      <span v-for="(word, index) in words"
-      :key="index"
-      @click="handleWordClick(word)"
-      :class="{selected: word === selectedWord}"
+      <span
+        v-for="(word, index) in words"
+        :key="index"
+        @click="handleWordClick(word)"
+        :class="{ selected: selectedWords.includes(word) }"
       >
-      {{ word }}
+        {{ word }}
       </span>
     </div>
+    <div class="button-row">
+      <button class="back-btn" @click="emit('back')">← Back</button>
+    <button
+      class="proceed-btn"
+      :disabled="selectedWords.length === 0"
+      @click="handleProceed"
+    >
+      Create Flashcard →
+    </button>
+    </div>
   </div>
-  <button class="back-btn" @click="emit('back')">← Back</button>
-
 </template>
+
 
 <style scoped>
 span {
@@ -62,5 +82,35 @@ span:hover {
   background-color: #ffd700;
   border-color: #ffd700;
 }
+.button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+.back-btn {
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.back-btn:hover {
+  border-color: #999;
+}
+.proceed-btn {
+  padding: 10px 20px;
+  background-color: #ffd700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.proceed-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.proceed-btn:hover:not(:disabled) {
+  background-color: #f0c800;
+}
 </style>
-
