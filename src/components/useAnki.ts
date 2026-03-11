@@ -1,9 +1,7 @@
 export function useAnki() {
   async function addNote(front: string, back: string, translation: string) {
-    const response = await fetch('http://localhost:8765', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      const body = JSON.stringify({
         action: 'addNote',
         version: 6,
         params: {
@@ -20,11 +18,26 @@ export function useAnki() {
             tags: ['anki-helper'],
           },
         },
-      }),
-    })
-    const data = await response.json()
-    if (data.error) throw new Error(data.error)
-    return data.result
+      })
+
+      console.log('Sending to AnkiConnect:', body)
+
+      const response = await fetch('http://localhost:8765', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      })
+
+      console.log('Response status:', response.status)
+      const data = await response.json()
+      console.log('Response data:', data)
+
+      if (data.error) throw new Error(data.error)
+      return data.result
+    } catch (e) {
+      console.error('AnkiConnect error:', e)
+      throw e
+    }
   }
 
   return { addNote }

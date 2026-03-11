@@ -11,9 +11,13 @@ const emit = defineEmits<{
 
 const selectedWord = ref('')
 
+const punctuation = /^[。、！？「」『』（）・…\s]+$/
+
 const words = computed(() => {
-  const segmenter = new Intl.Segmenter('ja', {granularity: 'word'})
-  return [...segmenter.segment(props.text)].map((s) => s.segment)
+  const segmenter = new Intl.Segmenter('ja', { granularity: 'word' })
+  return [...segmenter.segment(props.text)]
+    .map((s) => s.segment)
+    .filter((word) => !punctuation.test(word))
 })
 
 function handleWordClick(word: string) {
