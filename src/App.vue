@@ -10,6 +10,7 @@ const currentStep = ref('input' as Step)
 const japaneseText = ref('')
 const targetWord = ref('')
 const sentence = ref('')
+const wordCount = ref(0)
 const {cleanText} = useTextCleanup()
 
 function handleTextSubmit(text: string) {
@@ -18,7 +19,8 @@ function handleTextSubmit(text: string) {
 }
 
 function handleWordsSelect(words: string[], fullSentence: string) {
-  targetWord.value = words.join('・')
+  targetWord.value = words.join('')
+  wordCount.value = words.length
   sentence.value = fullSentence
   currentStep.value = 'form'
 }
@@ -38,6 +40,7 @@ function handleWordsSelect(words: string[], fullSentence: string) {
   v-if="currentStep === 'form'"
   :targetWord="targetWord"
   :sentence="sentence"
+  :wordCount="wordCount"
   @back="currentStep = 'select'"
 />
 </template>

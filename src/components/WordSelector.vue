@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref} from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   text: string
@@ -10,9 +10,7 @@ const emit = defineEmits<{
   back: []
 }>()
 
-
-
-const selectedWords = ref<string[]>([])
+const selectedIndices = ref<number[]>([])
 
 const punctuation = /^[。、！？「」『』（）・…\s]+$/
 
@@ -23,20 +21,23 @@ const words = computed(() => {
     .filter((word) => !punctuation.test(word))
 })
 
-function handleWordClick(word: string) {
-  if (selectedWords.value.includes(word)) {
-    selectedWords.value = selectedWords.value.filter((w) => w !== word)
+function handleWordClick(index: number) {
+  if (selectedIndices.value.includes(index)) {
+    selectedIndices.value = selectedIndices.value.filter((i) => i !== index)
   } else {
-    selectedWords.value.push(word)
+    selectedIndices.value.push(index)
   }
 }
 
 function handleProceed() {
-  if (selectedWords.value.length > 0) {
-    emit('selectWords', selectedWords.value, props.text)
+  if (selectedIndices.value.length > 0) {
+    const selectedWords = selectedIndices.value
+      .sort((a, b) => a - b)
+      .map((i) => words.value[i])
+      .filter((word): word is string => word !== undefined)
+    emit('selectWords', selectedWords, props.text)
   }
 }
-
 </script>
 
 <template>
@@ -46,21 +47,21 @@ function handleProceed() {
       <span
         v-for="(word, index) in words"
         :key="index"
-        @click="handleWordClick(word)"
-        :class="{ selected: selectedWords.includes(word) }"
+        @click="handleWordClick(index)"
+        :class="{ selected: selectedIndices.includes(index) }"
       >
         {{ word }}
       </span>
     </div>
     <div class="button-row">
       <button class="back-btn" @click="emit('back')">← Back</button>
-    <button
-      class="proceed-btn"
-      :disabled="selectedWords.length === 0"
-      @click="handleProceed"
-    >
-      Create Flashcard →
-    </button>
+      <button
+        class="proceed-btn"
+        :disabled="selectedIndices.length === 0"
+        @click="handleProceed"
+      >
+        Create Flashcard →
+      </button>
     </div>
   </div>
 </template>

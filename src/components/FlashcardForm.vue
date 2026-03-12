@@ -7,6 +7,7 @@ import LoadingSpinner from './LoadingSpinner.vue';
 const props = defineProps<{
   targetWord: string
   sentence: string
+  wordCount: number
 }>()
 
 const emit = defineEmits<{
@@ -18,6 +19,7 @@ type FieldLocation = 'front' | 'back' | 'exclude'
 const front = ref(props.targetWord)
 const back = ref(props.sentence)
 const { translation, loading: translationLoading, translate } = useTranslation()
+const { translation: wordTranslation, loading: wordTranslationLoading, translate: translateWord } = useTranslation()
 const { reading, meaning, loading: jishoLoading, lookupWord } = useJisho()
 const { addNote } = useAnki()
 const exporting = ref(false)
@@ -26,16 +28,22 @@ const error = ref('')
 
 const fields = ref([
   { label: 'Target Word', value: front, location: 'front' as FieldLocation },
-  { label: 'Reading', value: reading, location: 'front' as FieldLocation },
+  { label: 'Reading', value: wordTranslation, location: 'front' as FieldLocation },
   { label: 'Meaning', value: meaning, location: 'back' as FieldLocation },
   { label: 'Sentence', value: back, location: 'back' as FieldLocation },
   { label: 'Translation', value: translation, location: 'back' as FieldLocation },
 ])
 
+
 onMounted(() => {
   translate(props.sentence)
-  lookupWord(props.targetWord)
+  if (props.wordCount === 1) {
+    lookupWord(props.targetWord)
+  } else {
+    translateWord(props.targetWord)
+  }
 })
+
 
 function buildSide(location: FieldLocation): string {
   return fields.value
@@ -62,8 +70,8 @@ async function handleExport() {
 </script>
 
 <template>
-  <div v-if="translationLoading || jishoLoading">
-    <LoadingSpinner />
+<div v-if="translationLoading || jishoLoading || wordTranslationLoading">
+  <LoadingSpinner />
   </div>
 
   <div v-else class="form-wrapper">
