@@ -20,29 +20,40 @@ const front = ref(props.targetWord)
 const back = ref(props.sentence)
 const { translation, loading: translationLoading, translate } = useTranslation()
 const { translation: wordTranslation, loading: wordTranslationLoading, translate: translateWord } = useTranslation()
-const { reading, meaning, loading: jishoLoading, lookupWord } = useJisho()
+const { reading, meaning, loading: jishoLoading, lookupWord, getPhraseReading } = useJisho()
 const { addNote } = useAnki()
 const exporting = ref(false)
 const success = ref(false)
 const error = ref('')
 
-const fields = ref([
-  { label: 'Target Word', value: front, location: 'front' as FieldLocation },
-  { label: 'Reading', value: wordTranslation, location: 'front' as FieldLocation },
-  { label: 'Meaning', value: meaning, location: 'back' as FieldLocation },
-  { label: 'Sentence', value: back, location: 'back' as FieldLocation },
-  { label: 'Translation', value: translation, location: 'back' as FieldLocation },
-])
+const fields = ref(
+  props.wordCount === 1
+    ? [
+        { label: 'Target Word', value: front, location: 'front' as FieldLocation },
+        { label: 'Reading', value: reading, location: 'front' as FieldLocation },
+        { label: 'Meaning', value: meaning, location: 'back' as FieldLocation },
+        { label: 'Sentence', value: back, location: 'back' as FieldLocation },
+        { label: 'Translation', value: translation, location: 'back' as FieldLocation },
+      ]
+    : [
+        { label: 'Target Word', value: front, location: 'front' as FieldLocation },
+        { label: 'Reading', value: reading, location: 'front' as FieldLocation },
+        { label: 'Meaning', value: wordTranslation, location: 'back' as FieldLocation },
+        { label: 'Sentence', value: back, location: 'back' as FieldLocation },
+        { label: 'Translation', value: translation, location: 'back' as FieldLocation },
+      ]
+)
 
-
-onMounted(() => {
+onMounted(async () => {
   translate(props.sentence)
   if (props.wordCount === 1) {
     lookupWord(props.targetWord)
   } else {
     translateWord(props.targetWord)
+    reading.value = await getPhraseReading(props.targetWord)
   }
 })
+
 
 
 function buildSide(location: FieldLocation): string {
@@ -70,7 +81,7 @@ async function handleExport() {
 </script>
 
 <template>
-<div v-if="translationLoading || jishoLoading || wordTranslationLoading">
+<div v-if="translationLoading || jishoLoading || wordTranslationLoading ">
   <LoadingSpinner />
   </div>
 
