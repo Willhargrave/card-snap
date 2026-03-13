@@ -27,22 +27,51 @@ function handleWordsSelect(words: string[], fullSentence: string) {
 </script>
 
 <template>
-  <h1>Anki Helper</h1>
-  <p>Language Reader Tool and card maker</p>
-  <TextInput v-if="currentStep === 'input'" @submit="handleTextSubmit" />
-  <WordSelector
-    v-if="currentStep === 'select'"
-    :text="japaneseText"
-    @selectWords="handleWordsSelect"
-    @back="currentStep = 'input'"
-  ></WordSelector>
-  <FlashcardForm
-    v-if="currentStep === 'form'"
-    :targetWord="targetWord"
-    :sentence="sentence"
-    :wordCount="wordCount"
-    @back="currentStep = 'select'"
-  />
+  <div class="app">
+    <div class="header">
+      <h1>Automatic Anki Card Maker</h1>
+      <p>Language Reader Tool and card maker for Japanese text and images</p>
+    </div>
+    <div class="content">
+      <TextInput v-if="currentStep === 'input'" @submit="handleTextSubmit" />
+      <WordSelector
+        v-if="currentStep === 'select'"
+        :text="japaneseText"
+        @selectWords="handleWordsSelect"
+        @back="currentStep = 'input'"
+      />
+      <FlashcardForm
+        v-if="currentStep === 'form'"
+        :targetWord="targetWord"
+        :sentence="sentence"
+        :wordCount="wordCount"
+        @back="currentStep = 'select'"
+      />
+    </div>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+}
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.header h1 {
+  margin: 0 0 8px 0;
+}
+.header p {
+  margin: 0;
+  color: #999;
+}
+.content {
+  width: 100%;
+  max-width: 900px;
+}
+</style>

@@ -47,7 +47,7 @@ async function handleImageUpload(event: Event) {
 <style scoped>
 .options-wrapper {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 24px;
 }
 .option-card {
@@ -59,8 +59,18 @@ async function handleImageUpload(event: Event) {
   border: 1px solid #ccc;
   border-radius: 8px;
 }
-.option-card h2 {
-  margin: 0;
+.upload-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #999;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
 }
 .option-card p {
   color: #999;
@@ -96,18 +106,7 @@ button:disabled {
   padding-top: 60px;
   font-size: 0.9rem;
 }
-.upload-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  border: 2px dashed #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #999;
-  font-size: 0.9rem;
-  transition: border-color 0.2s;
-}
+
 .upload-label:hover {
   border-color: #ffd700;
   color: #333;
