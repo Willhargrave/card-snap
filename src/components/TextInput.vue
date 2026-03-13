@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAzureOCR } from './useAzureOCR';
+import { useAzureOCR } from '../composables/useAzureOCR'
 
 const emit = defineEmits<{
   submit: [text: string]
 }>()
 
-const {extractText, loading: ocrLoading} = useAzureOCR()
+const { extractText, loading: ocrLoading } = useAzureOCR()
 const inputText = ref('')
 
 function handleTextSubmit() {
@@ -20,7 +20,6 @@ async function handleImageUpload(event: Event) {
   const text = await extractText(file)
   if (text) emit('submit', text)
 }
-
 </script>
 
 <template>
@@ -28,14 +27,8 @@ async function handleImageUpload(event: Event) {
     <div class="option-card">
       <h2>Paste Text</h2>
       <p>Paste Japanese text directly</p>
-      <textarea
-        v-model="inputText"
-        placeholder="Paste your Japanese text here..."
-        rows="6"
-      />
-      <button @click="handleTextSubmit" :disabled="!inputText.trim()">
-        Analyse Text →
-      </button>
+      <textarea v-model="inputText" placeholder="Paste your Japanese text here..." rows="6" />
+      <button @click="handleTextSubmit" :disabled="!inputText.trim()">Analyse Text →</button>
     </div>
 
     <div class="divider">or</div>
@@ -44,14 +37,9 @@ async function handleImageUpload(event: Event) {
       <h2>Upload Image</h2>
       <p>Extract text from a photo</p>
       <label class="upload-label" :class="{ loading: ocrLoading }">
-      <input
-        type="file"
-        accept="image/*"
-        @change="handleImageUpload"
-        :disabled="ocrLoading"
-      />
-      {{ ocrLoading ? 'Extracting text...' : 'Choose Image' }}
-    </label>
+        <input type="file" accept="image/*" @change="handleImageUpload" :disabled="ocrLoading" />
+        {{ ocrLoading ? 'Extracting text...' : 'Choose Image' }}
+      </label>
     </div>
   </div>
 </template>

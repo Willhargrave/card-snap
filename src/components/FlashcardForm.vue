@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useTranslation } from './useTranslation';
-import { useAnki } from './useAnki';
-import { useJisho } from './useJisho';
-import LoadingSpinner from './LoadingSpinner.vue';
+import { ref, onMounted } from 'vue'
+import { useTranslation } from '../composables/useTranslation'
+import { useAnki } from '../composables/useAnki'
+import { useJisho } from '../composables/useJisho'
+import LoadingSpinner from './LoadingSpinner.vue'
 const props = defineProps<{
   targetWord: string
   sentence: string
@@ -19,7 +19,11 @@ type FieldLocation = 'front' | 'back' | 'exclude'
 const front = ref(props.targetWord)
 const back = ref(props.sentence)
 const { translation, loading: translationLoading, translate } = useTranslation()
-const { translation: wordTranslation, loading: wordTranslationLoading, translate: translateWord } = useTranslation()
+const {
+  translation: wordTranslation,
+  loading: wordTranslationLoading,
+  translate: translateWord,
+} = useTranslation()
 const { reading, meaning, loading: jishoLoading, lookupWord, getPhraseReading } = useJisho()
 const { addNote } = useAnki()
 const exporting = ref(false)
@@ -41,7 +45,7 @@ const fields = ref(
         { label: 'Meaning', value: wordTranslation, location: 'back' as FieldLocation },
         { label: 'Sentence', value: back, location: 'back' as FieldLocation },
         { label: 'Translation', value: translation, location: 'back' as FieldLocation },
-      ]
+      ],
 )
 
 onMounted(async () => {
@@ -53,8 +57,6 @@ onMounted(async () => {
     reading.value = await getPhraseReading(props.targetWord)
   }
 })
-
-
 
 function buildSide(location: FieldLocation): string {
   return fields.value
@@ -76,13 +78,11 @@ async function handleExport() {
     exporting.value = false
   }
 }
-
-
 </script>
 
 <template>
-<div v-if="translationLoading || jishoLoading || wordTranslationLoading ">
-  <LoadingSpinner />
+  <div v-if="translationLoading || jishoLoading || wordTranslationLoading">
+    <LoadingSpinner />
   </div>
 
   <div v-else class="form-wrapper">
@@ -108,7 +108,11 @@ async function handleExport() {
 
     <button class="back-btn" @click="emit('back')">← Back</button>
 
-    <button class="export-btn" @click="handleExport" :disabled="exporting || translationLoading || jishoLoading">
+    <button
+      class="export-btn"
+      @click="handleExport"
+      :disabled="exporting || translationLoading || jishoLoading"
+    >
       {{ exporting ? 'Exporting...' : 'Export to Anki' }}
     </button>
   </div>
@@ -187,6 +191,4 @@ textarea:disabled {
 .back-btn:hover {
   border-color: #999;
 }
-
 </style>
-
