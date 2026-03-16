@@ -80,18 +80,15 @@ async function handleExport() {
   error.value = ''
   success.value = false
   try {
-    console.log('Exporting with deck:', activeDeck.value)
-    console.log('Front:', buildSide('front'))
-    console.log('Back:', buildSide('back'))
     await addNote(buildSide('front'), buildSide('back'), activeDeck.value)
     success.value = true
   } catch (e) {
-    console.error('Export error:', e)
-    error.value = 'Failed to export. Make sure Anki is open with AnkiConnect installed.'
+    error.value = e instanceof Error ? e.message : 'Unknown error'
   } finally {
     exporting.value = false
   }
 }
+
 </script>
 
 <template>
@@ -118,8 +115,12 @@ async function handleExport() {
     </div>
 
     <p v-if="success" style="color: green">Card added to Anki successfully!</p>
-    <p v-if="error" style="color: red">{{ error }}</p>
-      <label>Deck</label>
+    <div v-if="error">
+      <p style="color: red">Failed to export. Make sure Anki is open with AnkiConnect installed.</p>
+      <p style="color: red; font-size: 0.85rem;">{{ error }}</p>
+    </div>
+
+    <label>Deck</label>
     <div class="deck-row">
       <select v-if="!showNewDeck" v-model="selectedDeck">
         <option v-for="deck in decks" :key="deck" :value="deck">{{ deck }}</option>
