@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useAzureOCR } from '../composables/useAzureOCR'
 
 const emit = defineEmits<{
-  submit: [text: string]
+  submit: [text: string, image?: File]
 }>()
 
 const { extractText, loading: ocrLoading } = useAzureOCR()
@@ -18,7 +18,7 @@ async function handleImageUpload(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0]
   if (!file) return
   const text = await extractText(file)
-  if (text) emit('submit', text)
+  if (text) emit('submit', text, file)
 }
 </script>
 

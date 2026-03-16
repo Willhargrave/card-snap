@@ -11,10 +11,12 @@ const japaneseText = ref('')
 const targetWord = ref('')
 const sentence = ref('')
 const wordCount = ref(0)
+const uploadedImage = ref<File | null>(null)
 const { cleanText } = useTextCleanup()
 
-function handleTextSubmit(text: string) {
+function handleTextSubmit(text: string, image?: File) {
   japaneseText.value = cleanText(text)
+  uploadedImage.value = image ?? null
   currentStep.value = 'select'
 }
 
@@ -40,13 +42,14 @@ function handleWordsSelect(words: string[], fullSentence: string) {
         @selectWords="handleWordsSelect"
         @back="currentStep = 'input'"
       />
-      <FlashcardForm
-        v-if="currentStep === 'form'"
-        :targetWord="targetWord"
-        :sentence="sentence"
-        :wordCount="wordCount"
-        @back="currentStep = 'select'"
-      />
+    <FlashcardForm
+      v-if="currentStep === 'form'"
+      :targetWord="targetWord"
+      :sentence="sentence"
+      :wordCount="wordCount"
+      :image="uploadedImage"
+      @back="currentStep = 'select'"
+    />
     </div>
   </div>
 </template>

@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useTranslation } from '../composables/useTranslation'
 import { useAnki } from '../composables/useAnki'
 import { useJisho } from '../composables/useJisho'
 import LoadingSpinner from './LoadingSpinner.vue'
+import type { Ref }  from 'vue'
 
 const props = defineProps<{
   targetWord: string
   sentence: string
   wordCount: number
+  image?: File | null
 }>()
 
 const emit = defineEmits<{
@@ -16,6 +18,13 @@ const emit = defineEmits<{
 }>()
 
 type FieldLocation = 'front' | 'back' | 'exclude'
+
+type Field = {
+  label: string
+  value: Ref<string>
+  location: FieldLocation
+  isImage?: boolean
+}
 
 const front = ref(props.targetWord)
 const back = ref(props.sentence)
@@ -35,8 +44,14 @@ const selectedDeck = ref('Default')
 const newDeckName = ref('')
 const showNewDeck = ref(false)
 const activeDeck = computed(() => showNewDeck.value ? newDeckName.value : selectedDeck.value)
+const imageUrl = computed(() =>
+  props.image ? URL.createObjectURL(props.image) : null
+)
+const imageFields = props.image
+  ? [{ label: 'Image', value: ref(''), location: 'back' as FieldLocation, isImage: true }]
+  : []
 
-const fields = ref(
+const fields = ref<Field[]>(
   props.wordCount === 1
     ? [
         { label: 'Target Word', value: front, location: 'front' as FieldLocation },
@@ -44,6 +59,7 @@ const fields = ref(
         { label: 'Meaning', value: meaning, location: 'back' as FieldLocation },
         { label: 'Sentence', value: back, location: 'back' as FieldLocation },
         { label: 'Translation', value: translation, location: 'back' as FieldLocation },
+        ...imageFields,
       ]
     : [
         { label: 'Target Word', value: front, location: 'front' as FieldLocation },
@@ -51,7 +67,8 @@ const fields = ref(
         { label: 'Meaning', value: wordTranslation, location: 'back' as FieldLocation },
         { label: 'Sentence', value: back, location: 'back' as FieldLocation },
         { label: 'Translation', value: translation, location: 'back' as FieldLocation },
-      ],
+        ...imageFields,
+      ]
 )
 
 onMounted(async () => {
@@ -67,12 +84,33 @@ onMounted(async () => {
   }
 })
 
+onUnmounted(() => {
+  if (imageUrl.value) URL.revokeObjectURL(imageUrl.value)
+})
 
-function buildSide(location: FieldLocation): string {
-  return fields.value
-    .filter((f) => f.location === location)
-    .map((f) => f.value)
-    .join('<br><br>')
+
+async function buildSideWithImage(location: FieldLocation): Promise<string> {
+  const parts = await Promise.all(
+    fields.value
+      .filter((f) => f.location === location)
+      .map(async (f) => {
+        if (f.isImage && props.image) {
+          const base64 = await fileToBase64(props.image)
+          return `<img src="${base64}" />`
+        }
+        return f.value
+      })
+  )
+  return parts.join('<br><br>')
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
 }
 
 async function handleExport() {
@@ -80,7 +118,9 @@ async function handleExport() {
   error.value = ''
   success.value = false
   try {
-    await addNote(buildSide('front'), buildSide('back'), activeDeck.value)
+    const front = await buildSideWithImage('front')
+    const back = await buildSideWithImage('back')
+    await addNote(front, back, activeDeck.value)
     success.value = true
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Unknown error'
@@ -99,20 +139,23 @@ async function handleExport() {
   <div v-else class="form-wrapper">
     <h2>Flashcard Preview</h2>
 
-    <div v-for="field in fields" :key="field.label" class="field">
-      <label>{{ field.label }}</label>
-      <textarea v-model="field.value" rows="2" :disabled="translationLoading || jishoLoading" />
-      <div class="toggle-group">
-        <button
-          v-for="option in ['front', 'back', 'exclude']"
-          :key="option"
-          :class="{ active: field.location === option }"
-          @click="field.location = option as FieldLocation"
-        >
-          {{ option }}
-        </button>
-      </div>
-    </div>
+<div v-for="field in fields" :key="field.label" class="field">
+  <label>{{ field.label }}</label>
+  <div v-if="field.isImage && imageUrl" class="image-preview">
+    <img :src="imageUrl" alt="Uploaded image" />
+  </div>
+  <textarea v-else v-model="field.value" rows="2" />
+  <div class="toggle-group">
+    <button
+      v-for="option in ['front', 'back', 'exclude']"
+      :key="option"
+      :class="{ active: field.location === option }"
+      @click="field.location = option as FieldLocation"
+    >
+      {{ option }}
+    </button>
+  </div>
+</div>
 
     <p v-if="success" style="color: green">Card added to Anki successfully!</p>
     <div v-if="error">
@@ -251,6 +294,14 @@ select {
 }
 .new-deck-btn:hover {
   border-color: #999;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  object-fit: contain;
 }
 
 </style>
