@@ -1,5 +1,16 @@
 export function useAnki() {
-  async function addNote(front: string, back: string) {
+  async function getDecks(): Promise<string[]> {
+    const response = await fetch('http://localhost:8765', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'deckNames', version: 6 }),
+    })
+    const data = await response.json()
+    if (data.error) throw new Error(data.error)
+    return data.result
+  }
+
+  async function addNote(front: string, back: string, deckName: string) {
     const response = await fetch('http://localhost:8765', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -8,7 +19,7 @@ export function useAnki() {
         version: 6,
         params: {
           note: {
-            deckName: 'Default',
+            deckName,
             modelName: 'Basic',
             fields: { Front: front, Back: back },
             options: { allowDuplicate: false },
@@ -22,5 +33,5 @@ export function useAnki() {
     return data.result
   }
 
-  return { addNote }
+  return { addNote, getDecks }
 }

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useTranslation } from '../composables/useTranslation'
 import { useAnki } from '../composables/useAnki'
 import { useJisho } from '../composables/useJisho'
 import LoadingSpinner from './LoadingSpinner.vue'
+
 const props = defineProps<{
   targetWord: string
   sentence: string
@@ -25,10 +26,15 @@ const {
   translate: translateWord,
 } = useTranslation()
 const { reading, meaning, loading: jishoLoading, lookupWord, getPhraseReading } = useJisho()
-const { addNote } = useAnki()
+const { addNote, getDecks } = useAnki()
 const exporting = ref(false)
 const success = ref(false)
 const error = ref('')
+const decks = ref<string[]>([])
+const selectedDeck = ref('Default')
+const newDeckName = ref('')
+const showNewDeck = ref(false)
+const activeDeck = computed(() => showNewDeck.value ? newDeckName.value : selectedDeck.value)
 
 const fields = ref(
   props.wordCount === 1
@@ -50,13 +56,17 @@ const fields = ref(
 
 onMounted(async () => {
   translate(props.sentence)
-  if (props.wordCount === 1) {
-    lookupWord(props.targetWord)
-  } else {
+  lookupWord(props.targetWord)
+  if (props.wordCount > 1) {
     translateWord(props.targetWord)
-    reading.value = await getPhraseReading(props.targetWord)
+  }
+  try {
+    decks.value = await getDecks()
+  } catch {
+    decks.value = ['Default']
   }
 })
+
 
 function buildSide(location: FieldLocation): string {
   return fields.value
@@ -70,7 +80,7 @@ async function handleExport() {
   error.value = ''
   success.value = false
   try {
-    await addNote(buildSide('front'), buildSide('back'))
+    await addNote(buildSide('front'), buildSide('back'), activeDeck.value)
     success.value = true
   } catch (e) {
     error.value = 'Failed to export. Make sure Anki is open with AnkiConnect installed.'
@@ -105,6 +115,22 @@ async function handleExport() {
 
     <p v-if="success" style="color: green">Card added to Anki successfully!</p>
     <p v-if="error" style="color: red">{{ error }}</p>
+      <label>Deck</label>
+    <div class="deck-row">
+      <select v-if="!showNewDeck" v-model="selectedDeck">
+        <option v-for="deck in decks" :key="deck" :value="deck">{{ deck }}</option>
+      </select>
+    <input
+      v-else
+      v-model="newDeckName"
+      type="text"
+      placeholder="New deck name..."
+    />
+    <button class="new-deck-btn" @click="showNewDeck = !showNewDeck">
+      {{ showNewDeck ? 'Use existing' : '+ New deck' }}
+    </button>
+    </div>
+
 
     <button class="back-btn" @click="emit('back')">← Back</button>
 
@@ -191,4 +217,35 @@ textarea:disabled {
 .back-btn:hover {
   border-color: #999;
 }
+
+.deck-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.deck-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+select {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+.new-deck-btn {
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.new-deck-btn:hover {
+  border-color: #999;
+}
+
 </style>
