@@ -80,9 +80,13 @@ async function handleExport() {
   error.value = ''
   success.value = false
   try {
+    console.log('Exporting with deck:', activeDeck.value)
+    console.log('Front:', buildSide('front'))
+    console.log('Back:', buildSide('back'))
     await addNote(buildSide('front'), buildSide('back'), activeDeck.value)
     success.value = true
   } catch (e) {
+    console.error('Export error:', e)
     error.value = 'Failed to export. Make sure Anki is open with AnkiConnect installed.'
   } finally {
     exporting.value = false
