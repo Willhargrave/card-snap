@@ -4,7 +4,17 @@ import { useTranslation } from '../composables/useTranslation'
 import { useAnki } from '../composables/useAnki'
 import { useJisho } from '../composables/useJisho'
 import LoadingSpinner from './LoadingSpinner.vue'
+import { useCSVExport } from '@/composables/useCSVExport'
 import type { Ref }  from 'vue'
+
+
+type FieldLocation = 'front' | 'back' | 'exclude'
+type Field = {
+  label: string
+  value: Ref<string>
+  location: FieldLocation
+  isImage?: boolean
+}
 
 const props = defineProps<{
   targetWord: string
@@ -17,14 +27,6 @@ const emit = defineEmits<{
   back: []
 }>()
 
-type FieldLocation = 'front' | 'back' | 'exclude'
-
-type Field = {
-  label: string
-  value: Ref<string>
-  location: FieldLocation
-  isImage?: boolean
-}
 
 const front = ref(props.targetWord)
 const back = ref(props.sentence)
@@ -34,7 +36,7 @@ const {
   loading: wordTranslationLoading,
   translate: translateWord,
 } = useTranslation()
-const { reading, meaning, loading: jishoLoading, lookupWord, getPhraseReading } = useJisho()
+const { reading, meaning, loading: jishoLoading, lookupWord } = useJisho()
 const { addNote, getDecks } = useAnki()
 const exporting = ref(false)
 const success = ref(false)
@@ -44,6 +46,7 @@ const selectedDeck = ref('Default')
 const newDeckName = ref('')
 const showNewDeck = ref(false)
 const activeDeck = computed(() => showNewDeck.value ? newDeckName.value : selectedDeck.value)
+const { exportToCSV } = useCSVExport()
 const imageUrl = computed(() =>
   props.image ? URL.createObjectURL(props.image) : null
 )
@@ -71,6 +74,8 @@ const fields = ref<Field[]>(
       ]
 )
 
+
+
 onMounted(async () => {
   translate(props.sentence)
   lookupWord(props.targetWord)
@@ -88,6 +93,11 @@ onUnmounted(() => {
   if (imageUrl.value) URL.revokeObjectURL(imageUrl.value)
 })
 
+async function handleCSVExport() {
+  const front = await buildSideWithImage('front')
+  const back = await buildSideWithImage('back')
+  exportToCSV(front, back)
+}
 
 async function buildSideWithImage(location: FieldLocation): Promise<string> {
   const parts = await Promise.all(
@@ -128,7 +138,6 @@ async function handleExport() {
     exporting.value = false
   }
 }
-
 </script>
 
 <template>
@@ -189,6 +198,9 @@ async function handleExport() {
     >
       {{ exporting ? 'Exporting...' : 'Export to Anki' }}
     </button>
+    <button class="csv-btn" @click="handleCSVExport" :disabled="translationLoading || jishoLoading">
+    Download CSV
+  </button>
   </div>
 </template>
 
@@ -302,6 +314,26 @@ select {
   border-radius: 4px;
   border: 1px solid #ccc;
   object-fit: contain;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 12px;
+}
+.csv-btn {
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.csv-btn:hover {
+  border-color: #999;
+}
+.csv-btn:disabled {
+  color: #999;
+  cursor: not-allowed;
 }
 
 </style>
