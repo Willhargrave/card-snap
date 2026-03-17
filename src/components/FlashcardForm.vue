@@ -5,6 +5,7 @@ import { useAnki } from '../composables/useAnki'
 import { useJisho } from '../composables/useJisho'
 import LoadingSpinner from './LoadingSpinner.vue'
 import { useCSVExport } from '@/composables/useCSVExport'
+import { useCardStore } from '@/stores/useCardStore'
 import type { Ref }  from 'vue'
 
 
@@ -47,6 +48,8 @@ const newDeckName = ref('')
 const showNewDeck = ref(false)
 const activeDeck = computed(() => showNewDeck.value ? newDeckName.value : selectedDeck.value)
 const { exportToCSV } = useCSVExport()
+const cardStore = useCardStore()
+const addedToQueue = ref(false)
 const imageUrl = computed(() =>
   props.image ? URL.createObjectURL(props.image) : null
 )
@@ -96,7 +99,8 @@ onUnmounted(() => {
 async function handleCSVExport() {
   const front = await buildSideWithImage('front')
   const back = await buildSideWithImage('back')
-  exportToCSV(front, back)
+  cardStore.addCard(front, back)
+  addedToQueue.value = true
 }
 
 async function buildSideWithImage(location: FieldLocation): Promise<string> {
@@ -189,19 +193,18 @@ async function handleExport() {
     </div>
 
 
-    <button class="back-btn" @click="emit('back')">← Back</button>
+<button class="back-btn" @click="emit('back')">← Back</button>
 
-    <button
-      class="export-btn"
-      @click="handleExport"
-      :disabled="exporting || translationLoading || jishoLoading"
-    >
-      {{ exporting ? 'Exporting...' : 'Export to Anki' }}
-    </button>
-    <button class="csv-btn" @click="handleCSVExport" :disabled="translationLoading || jishoLoading">
-    Download CSV
+<div class="export-buttons">
+  <button class="export-btn" @click="handleExport" :disabled="exporting || translationLoading || jishoLoading">
+    {{ exporting ? 'Exporting...' : 'Export to Anki' }}
   </button>
-  </div>
+  <button class="csv-btn" @click="handleCSVExport" :disabled="translationLoading || jishoLoading">
+    {{ addedToQueue ? '✓ Added to CSV queue' : 'Add to CSV' }}
+  </button>
+</div>
+</div>
+
 </template>
 
 <style scoped>

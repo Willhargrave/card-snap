@@ -3,6 +3,10 @@ import { ref } from 'vue'
 import TextInput from './components/TextInput.vue'
 import WordSelector from './components/WordSelector.vue'
 import FlashcardForm from './components/FlashcardForm.vue'
+import { useCardStore } from './stores/useCardStore'
+import { useCSVExport } from './composables/useCSVExport'
+const cardStore = useCardStore()
+const { exportToCSV } = useCSVExport()
 import { useTextCleanup } from './composables/useTextCleanup'
 
 type Step = 'input' | 'select' | 'form'
@@ -33,6 +37,10 @@ function handleWordsSelect(words: string[], fullSentence: string) {
     <div class="header">
       <h1>Automatic Anki Card Maker</h1>
       <p>Language Reader Tool and card maker for Japanese text and images</p>
+      <div class="csv-bar" v-if="cardStore.cards.length > 0">
+        <span>{{ cardStore.cards.length }} card{{ cardStore.cards.length !== 1 ? 's' : '' }} ready to export</span>
+        <button @click="exportToCSV">Download CSV</button>
+      </div>
     </div>
     <div class="content">
       <TextInput v-if="currentStep === 'input'" @submit="handleTextSubmit" />
@@ -88,5 +96,28 @@ function handleWordsSelect(words: string[], fullSentence: string) {
   .header h1 {
     font-size: 1.5rem;
   }
+}
+.csv-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffd700;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+.csv-bar button {
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.csv-bar button:hover {
+  border-color: #999;
 }
 </style>
