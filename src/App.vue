@@ -77,4 +77,16 @@ function handleWordsSelect(words: string[], fullSentence: string) {
   width: 100%;
   max-width: 900px;
 }
+
+@media (max-width: 768px) {
+  .app {
+    padding: 24px 16px;
+  }
+  .header {
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 1.5rem;
+  }
+}
 </style>

@@ -118,4 +118,17 @@ button:disabled {
   border-color: #ffd700;
   color: #333;
 }
+  @media (max-width: 768px) {
+  .options-wrapper {
+    flex-direction: column;
+  }
+  .divider {
+    padding-top: 0;
+    justify-content: center;
+  }
+  .upload-label {
+    min-height: 120px;
+  }
+}
+
 </style>
