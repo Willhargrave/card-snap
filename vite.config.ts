@@ -13,6 +13,7 @@ export default defineConfig({
     }
   },
   server: {
+    host: true,
     proxy: {
       '/jisho': {
         target: 'https://jisho.org',
