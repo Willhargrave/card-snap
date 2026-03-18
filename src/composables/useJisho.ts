@@ -5,10 +5,15 @@ export function useJisho() {
   const meaning = ref('')
   const loading = ref(false)
 
+
+  const baseUrl = import.meta.env.DEV
+    ? '/jisho/api/v1/search/words'
+    : '/api/jisho'
+
   async function lookupWord(word: string) {
     loading.value = true
     try {
-      const url = `/jisho/api/v1/search/words?keyword=${encodeURIComponent(word)}`
+      const url = `${baseUrl}?keyword=${encodeURIComponent(word)}`
       const res = await fetch(url)
       const data = await res.json()
       const firstResult = data.data[0]
@@ -23,6 +28,7 @@ export function useJisho() {
     }
   }
 
+
   async function getPhraseReading(phrase: string): Promise<string> {
     const segmenter = new Intl.Segmenter('ja', { granularity: 'word' })
     const segments = [...segmenter.segment(phrase)].map(s => s.segment)
@@ -32,7 +38,7 @@ export function useJisho() {
       segments.map(async (segment) => {
         if (isKanji(segment)) {
           try {
-            const url = `/jisho/api/v1/search/words?keyword=${encodeURIComponent(segment)}`
+            const url = `${baseUrl}?keyword=${encodeURIComponent(segment)}`
             const res = await fetch(url)
             const data = await res.json()
             const firstResult = data.data[0]
