@@ -178,11 +178,15 @@ async function handleExport() {
       <p style="color: red; font-size: 0.85rem;">{{ error }}</p>
     </div>
 
-    <label>Deck</label>
-    <div class="deck-row">
-      <select v-if="!showNewDeck" v-model="selectedDeck">
-        <option v-for="deck in decks" :key="deck" :value="deck">{{ deck }}</option>
-      </select>
+
+
+<button class="back-btn" @click="emit('back')">← Back</button>
+<div v-if="isLocal">
+  <label>Deck</label>
+  <div class="deck-row">
+    <select v-if="!showNewDeck" v-model="selectedDeck">
+      <option v-for="deck in decks" :key="deck" :value="deck">{{ deck }}</option>
+    </select>
     <input
       v-else
       v-model="newDeckName"
@@ -192,29 +196,26 @@ async function handleExport() {
     <button class="new-deck-btn" @click="showNewDeck = !showNewDeck">
       {{ showNewDeck ? 'Use existing' : '+ New deck' }}
     </button>
-    </div>
+  </div>
 
-
-<button class="back-btn" @click="emit('back')">← Back</button>
-
-<div class="export-buttons">
-  <button
-    v-if="isLocal"
-    class="export-btn"
-    @click="handleExport"
-    :disabled="exporting || translationLoading || jishoLoading"
-  >
-    {{ exporting ? 'Exporting...' : 'Export to Anki' }}
-  </button>
-  <button
-    class="csv-btn"
-    @click="handleCSVExport"
-    :disabled="translationLoading || jishoLoading"
-  >
-    {{ addedToQueue ? '✓ Added to CSV queue' : 'Add to CSV' }}
-  </button>
+  <div class="export-buttons">
+    <button
+      class="export-btn"
+      @click="handleExport"
+      :disabled="exporting || translationLoading || jishoLoading"
+    >
+      {{ exporting ? 'Exporting...' : 'Export to Anki' }}
+    </button>
+  </div>
 </div>
 
+<button
+  class="csv-btn"
+  @click="handleCSVExport"
+  :disabled="translationLoading || jishoLoading"
+>
+  {{ addedToQueue ? '✓ Added to CSV queue' : 'Add to CSV' }}
+</button>
 </div>
 
 </template>
