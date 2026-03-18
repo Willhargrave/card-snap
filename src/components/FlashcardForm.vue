@@ -53,6 +53,8 @@ const addedToQueue = ref(false)
 const imageUrl = computed(() =>
   props.image ? URL.createObjectURL(props.image) : null
 )
+const isLocal = window.location.hostname === 'localhost' ||
+                window.location.hostname === '127.0.0.1'
 const imageFields = props.image
   ? [{ label: 'Image', value: ref(''), location: 'back' as FieldLocation, isImage: true }]
   : []
@@ -196,13 +198,23 @@ async function handleExport() {
 <button class="back-btn" @click="emit('back')">← Back</button>
 
 <div class="export-buttons">
-  <button class="export-btn" @click="handleExport" :disabled="exporting || translationLoading || jishoLoading">
+  <button
+    v-if="isLocal"
+    class="export-btn"
+    @click="handleExport"
+    :disabled="exporting || translationLoading || jishoLoading"
+  >
     {{ exporting ? 'Exporting...' : 'Export to Anki' }}
   </button>
-  <button class="csv-btn" @click="handleCSVExport" :disabled="translationLoading || jishoLoading">
+  <button
+    class="csv-btn"
+    @click="handleCSVExport"
+    :disabled="translationLoading || jishoLoading"
+  >
     {{ addedToQueue ? '✓ Added to CSV queue' : 'Add to CSV' }}
   </button>
 </div>
+
 </div>
 
 </template>

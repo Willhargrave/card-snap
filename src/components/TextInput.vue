@@ -16,9 +16,21 @@ function handleTextSubmit() {
 
 async function handleImageUpload(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0]
-  if (!file) return
+  console.log('File selected:', file)
+  if (!file) {
+    console.log('No file selected')
+    return
+  }
+  console.log('File name:', file.name)
+  console.log('File size:', file.size)
+  console.log('File type:', file.type)
   const text = await extractText(file)
-  if (text) emit('submit', text, file)
+  console.log('Extracted text:', text)
+  if (text) {
+    emit('submit', text, file)
+  } else {
+    console.log('No text extracted from image')
+  }
 }
 </script>
 
