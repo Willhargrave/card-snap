@@ -12,15 +12,18 @@ const emit = defineEmits<{
 
 const selectedIndices = ref<number[]>([])
 
-const punctuation = /^[。、！？「」『』（）・…\s]+$/
+const excludeToken = (word: string) => {
+  const isJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u3400-\u4DBF]/.test(word)
+  const isPunctuation = /^[。、！？「」『』（）・…\s]+$/.test(word)
+  return !isJapanese || isPunctuation
+}
 
 const words = computed(() => {
   const segmenter = new Intl.Segmenter('ja', { granularity: 'word' })
   return [...segmenter.segment(props.text)]
     .map((s) => s.segment)
-    .filter((word) => !punctuation.test(word))
+    .filter((word) => !excludeToken(word))
 })
-
 function handleWordClick(index: number) {
   if (selectedIndices.value.includes(index)) {
     selectedIndices.value = selectedIndices.value.filter((i) => i !== index)
