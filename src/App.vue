@@ -41,12 +41,25 @@ function handleWordsSelect(words: string[], fullSentence: string) {
         target="_blank"
         class="github-btn"
       >
-        Download for AnkiConnect
+    <svg height="16" width="16" viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+        Source Code
       </a>
     </div>
   </header>
   <div class="app">
     <div class="content">
+      <div v-if="currentStep === 'input'" class="explainer">
+      <h1>How it works</h1>
+      <ul>
+        <li>Take a picture of Japanese text or upload a photo choose your target word or sentence to create a card</li>
+        <li>Double-check the translations and choose what content you want on the front and back of your card</li>
+        <li>Add cards to your CSV download basket</li>
+        <li>Download and import to your favourite SRS app (this app is primarly designed for use with Anki)</li>
+        <li>Follow the link to the GitHub repo to run the app locally and connect directly with AnkiConnect on desktop</li>
+      </ul>
+    </div>
       <TextInput v-if="currentStep === 'input'" @submit="handleTextSubmit" />
       <WordSelector
         v-if="currentStep === 'select'"
@@ -89,7 +102,7 @@ function handleWordsSelect(words: string[], fullSentence: string) {
   top: 0;
   background: black;
   z-index: 10;
-  margin-bottom: 100px;
+  margin-bottom: 10px;
 }
 .header-content {
   max-width: 900px;
@@ -104,6 +117,9 @@ function handleWordsSelect(words: string[], fullSentence: string) {
   font-size: 1.2rem;
 }
 .github-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 16px;
   background: #24292e;
   color: white;
@@ -161,5 +177,29 @@ function handleWordsSelect(words: string[], fullSentence: string) {
 }
 .csv-bar button:hover {
   border-color: #999;
+}
+
+.explainer {
+  background: #fffdf0;
+  border: 1px solid #ffd700;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.explainer h1 {
+  margin: 0 0 16px 0;
+  font-weight: bold;
+}
+.explainer ul {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.explainer li {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5;
 }
 </style>
