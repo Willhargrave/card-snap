@@ -36,22 +36,20 @@ async function handleImageUpload(event: Event) {
 
 <template>
   <div class="options-wrapper">
-    <div class="option-card">
-      <h2>Paste Text</h2>
-      <p>Paste Japanese text directly</p>
-      <textarea v-model="inputText" placeholder="Paste your Japanese text here..." rows="6" />
-      <button @click="handleTextSubmit" :disabled="!inputText.trim()">Analyse Text →</button>
-    </div>
-
-    <div class="divider">or</div>
-
-    <div class="option-card">
+      <div class="option-card">
       <h2>Upload Image</h2>
       <p>Extract text from a photo</p>
       <label class="upload-label" :class="{ loading: ocrLoading }">
         <input type="file" accept="image/*" @change="handleImageUpload" :disabled="ocrLoading" />
         {{ ocrLoading ? 'Extracting text...' : 'Choose Image' }}
       </label>
+    </div>
+    <div class="divider">or</div>
+    <div class="option-card">
+      <h2>Paste Text</h2>
+      <p>Paste Japanese text directly</p>
+      <textarea v-model="inputText" placeholder="Paste your Japanese text here..." rows="6" />
+      <button @click="handleTextSubmit" :disabled="!inputText.trim()">Analyse Text →</button>
     </div>
   </div>
 </template>

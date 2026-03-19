@@ -84,7 +84,6 @@ function handleWordsSelect(words: string[], fullSentence: string) {
   </div>
 </template>
 
-
 <style scoped>
 .app {
   min-height: 100vh;
