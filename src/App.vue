@@ -33,15 +33,19 @@ function handleWordsSelect(words: string[], fullSentence: string) {
 </script>
 
 <template>
-  <div class="app">
-    <div class="header">
-      <h1>Automatic Anki Card Maker</h1>
-      <p>Language Reader Tool and card maker for Japanese text and images</p>
-      <div class="csv-bar" v-if="cardStore.cards.length > 0">
-        <span>{{ cardStore.cards.length }} card{{ cardStore.cards.length !== 1 ? 's' : '' }} ready to export</span>
-        <button @click="exportToCSV">Download CSV</button>
-      </div>
+    <header class="header">
+    <div class="header-content">
+      <h1 class="header-logo">CardSnap</h1>
+      <a
+        href="https://github.com/Willhargrave/anki-helper"
+        target="_blank"
+        class="github-btn"
+      >
+        Download for AnkiConnect
+      </a>
     </div>
+  </header>
+  <div class="app">
     <div class="content">
       <TextInput v-if="currentStep === 'input'" @submit="handleTextSubmit" />
       <WordSelector
@@ -50,17 +54,23 @@ function handleWordsSelect(words: string[], fullSentence: string) {
         @selectWords="handleWordsSelect"
         @back="currentStep = 'input'"
       />
-    <FlashcardForm
-      v-if="currentStep === 'form'"
-      :targetWord="targetWord"
-      :sentence="sentence"
-      :wordCount="wordCount"
-      :image="uploadedImage"
-      @back="currentStep = 'select'"
-    />
+      <FlashcardForm
+        v-if="currentStep === 'form'"
+        :targetWord="targetWord"
+        :sentence="sentence"
+        :wordCount="wordCount"
+        :image="uploadedImage"
+        @back="currentStep = 'select'"
+      />
+    </div>
+
+    <div class="csv-bar" v-if="cardStore.cards.length > 0">
+      <span>{{ cardStore.cards.length }} card{{ cardStore.cards.length !== 1 ? 's' : '' }} ready to export</span>
+      <button @click="exportToCSV">Download CSV</button>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .app {
@@ -70,10 +80,42 @@ function handleWordsSelect(words: string[], fullSentence: string) {
   align-items: center;
   padding: 40px 24px;
 }
+
 .header {
-  text-align: center;
-  margin-bottom: 40px;
+  width: 100%;
+  border-bottom: 1px solid #eee;
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  background: black;
+  z-index: 10;
+  margin-bottom: 100px;
 }
+.header-content {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  color: white;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-logo {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.github-btn {
+  padding: 8px 16px;
+  background: #24292e;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.github-btn:hover {
+  background: #3a3f45;
+}
+
+
 .header h1 {
   margin: 0 0 8px 0;
 }
