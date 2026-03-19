@@ -36,6 +36,16 @@ function handleWordsSelect(words: string[], fullSentence: string) {
     <header class="header">
     <div class="header-content">
       <h1 class="header-logo">CardSnap</h1>
+      <div class="header-links">
+      <a
+      href="mailto:cardsnap26@gmail.com"
+      class="email-btn">
+        <svg height="16" width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+    <polyline points="22,6 12,13 2,6"/>
+  </svg>
+        Contact
+      </a>
       <a
         href="https://github.com/Willhargrave/anki-helper"
         target="_blank"
@@ -47,6 +57,7 @@ function handleWordsSelect(words: string[], fullSentence: string) {
         Source Code
       </a>
     </div>
+    </div>
   </header>
   <div class="app">
     <div class="content">
@@ -54,7 +65,7 @@ function handleWordsSelect(words: string[], fullSentence: string) {
       <h1>How it works</h1>
       <ul>
         <li>Take a picture of Japanese text or upload a photo choose your target word or sentence to create a card</li>
-        <li>Double-check the translations and choose what content you want on the front and back of your card</li>
+        <li>Double-check the English translations and choose what content you want on the front and back of your card</li>
         <li>Add cards to your CSV download basket</li>
         <li>Download and import to your favourite SRS app (this app is primarly designed for use with Anki)</li>
         <li>Follow the link to the GitHub repo to run the app locally and connect directly with AnkiConnect on desktop</li>
@@ -201,4 +212,24 @@ function handleWordsSelect(words: string[], fullSentence: string) {
   color: #555;
   line-height: 1.5;
 }
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.email-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  background: #24292e;
+  color: white;
+}
+.email-btn:hover {
+  border-color: #999;
+}
+
 </style>
