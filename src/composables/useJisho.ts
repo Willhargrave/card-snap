@@ -29,32 +29,40 @@ export function useJisho() {
   }
 
 
-  async function getPhraseReading(phrase: string): Promise<string> {
-    const segmenter = new Intl.Segmenter('ja', { granularity: 'word' })
-    const segments = [...segmenter.segment(phrase)].map(s => s.segment)
-    const isKanji = (text: string) => /[一-龯]/.test(text)
+async function getPhraseReading(phrase: string): Promise<string> {
+  const segmenter = new Intl.Segmenter('ja', { granularity: 'word' })
+  const segments = [...segmenter.segment(phrase)].map(s => s.segment)
+  console.log('Segments:', segments)
 
-    const parts = await Promise.all(
-      segments.map(async (segment) => {
-        if (isKanji(segment)) {
-          try {
-            const url = `${baseUrl}?keyword=${encodeURIComponent(segment)}`
-            const res = await fetch(url)
-            const data = await res.json()
-            const firstResult = data.data[0]
-            if (firstResult) {
-              return firstResult.japanese[0].reading ?? segment
-            }
-          } catch {
-            return segment
+  const hasKanji = (text: string) => /[一-龯]/.test(text)
+
+  const parts = await Promise.all(
+    segments.map(async (segment) => {
+      console.log('Processing segment:', segment, 'hasKanji:', hasKanji(segment))
+      if (hasKanji(segment)) {
+        try {
+          const url = `${baseUrl}?keyword=${encodeURIComponent(segment)}`
+          const res = await fetch(url)
+          const data = await res.json()
+          const firstResult = data.data[0]
+          console.log('Jisho result for', segment, ':', firstResult?.japanese[0])
+          if (firstResult) {
+            return firstResult.japanese[0].reading ?? segment
           }
+        } catch {
+          return segment
         }
-        return segment
-      })
-    )
+      }
+      console.log('Passing through as-is:', segment)
+      return segment
+    })
+  )
 
-    return parts.join('')
-  }
+  console.log('Parts:', parts)
+  console.log('Joined:', parts.join(''))
+  return parts.join('')
+}
+
 
   return { reading, meaning, loading, lookupWord, getPhraseReading }
 }

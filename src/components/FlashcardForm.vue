@@ -4,7 +4,6 @@ import { useTranslation } from '../composables/useTranslation'
 import { useAnki } from '../composables/useAnki'
 import { useJisho } from '../composables/useJisho'
 import LoadingSpinner from './LoadingSpinner.vue'
-import { useCSVExport } from '@/composables/useCSVExport'
 import { useCardStore } from '@/stores/useCardStore'
 import type { Ref }  from 'vue'
 
@@ -37,7 +36,7 @@ const {
   loading: wordTranslationLoading,
   translate: translateWord,
 } = useTranslation()
-const { reading, meaning, loading: jishoLoading, lookupWord } = useJisho()
+const { reading, meaning, loading: jishoLoading, lookupWord, getPhraseReading } = useJisho()
 const { addNote, getDecks } = useAnki()
 const exporting = ref(false)
 const success = ref(false)
@@ -47,7 +46,6 @@ const selectedDeck = ref('Default')
 const newDeckName = ref('')
 const showNewDeck = ref(false)
 const activeDeck = computed(() => showNewDeck.value ? newDeckName.value : selectedDeck.value)
-const { exportToCSV } = useCSVExport()
 const cardStore = useCardStore()
 const addedToQueue = ref(false)
 const imageUrl = computed(() =>
@@ -79,13 +77,13 @@ const fields = ref<Field[]>(
       ]
 )
 
-
-
 onMounted(async () => {
   translate(props.sentence)
-  lookupWord(props.targetWord)
-  if (props.wordCount > 1) {
+  if (props.wordCount === 1) {
+    lookupWord(props.targetWord)
+  } else {
     translateWord(props.targetWord)
+    reading.value = await getPhraseReading(props.targetWord)
   }
   try {
     decks.value = await getDecks()
@@ -93,6 +91,7 @@ onMounted(async () => {
     decks.value = ['Default']
   }
 })
+
 
 onUnmounted(() => {
   if (imageUrl.value) URL.revokeObjectURL(imageUrl.value)

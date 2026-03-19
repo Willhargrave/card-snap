@@ -41,7 +41,7 @@ async function handleImageUpload(event: Event) {
       <p>Extract text from a photo</p>
       <label class="upload-label" :class="{ loading: ocrLoading }">
         <input type="file" accept="image/*" @change="handleImageUpload" :disabled="ocrLoading" />
-        {{ ocrLoading ? 'Extracting text...' : 'Choose Image' }}
+        {{ ocrLoading ? 'Extracting text...' : 'Choose Image or Take Photo' }}
       </label>
     </div>
     <div class="divider">or</div>
