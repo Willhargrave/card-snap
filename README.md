@@ -1,48 +1,92 @@
-# anki-helper
+# CardSnap
 
-This template should help get you started developing with Vue 3 in Vite.
+A Japanese flashcard maker that lets you take pictures of Japanese text or paste sentences, select target words, and export cards directly to Anki or as a CSV for any SRS app.
 
-## Recommended IDE Setup
+**Live app: https://cardsnap.vercel.app**
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+---
 
-## Recommended Browser Setup
+## Using the Web App
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+The web app works for CSV export without any setup. Simply visit the live app, paste or upload Japanese text, create your cards and download the CSV to import into your SRS app of choice.
 
-## Type Support for `.vue` Imports in TS
+---
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Running Locally with AnkiConnect
 
-## Customize configuration
+Running the app locally lets you export cards directly to Anki with one click via AnkiConnect.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### 1. Clone the repository
+```bash
+git clone https://github.com/Willhargrave/anki-helper.git
+cd anki-helper
+```
 
-## Project Setup
-
-```sh
+### 2. Install dependencies
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### 3. Set up environment variables
 
-```sh
+Create a `.env` file in the project root:
+```
+VITE_AZURE_VISION_KEY=your_azure_key
+VITE_AZURE_VISION_ENDPOINT=your_azure_endpoint
+```
+
+If you don't have Azure credentials the app will still work for text paste — only the image upload feature requires Azure.
+
+### 4. Run the app
+```bash
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+The app will be running at `http://localhost:5173`
 
-```sh
-npm run build
+---
+
+## Setting up AnkiConnect
+
+### 1. Install the AnkiConnect plugin
+
+- Open Anki
+- Go to **Tools → Add-ons → Get Add-ons**
+- Enter code **2055492159**
+- Restart Anki
+
+### 2. Configure AnkiConnect permissions
+
+- Go to **Tools → Add-ons → AnkiConnect → Config**
+- Update the config to allow requests from CardSnap:
+```json
+{
+  "apiKey": null,
+  "apiLogPath": null,
+  "ignoreOriginList": [],
+  "webBindAddress": "127.0.0.1",
+  "webBindPort": 8765,
+  "webCorsOriginList": [
+    "http://localhost",
+    "http://localhost:5173",
+  ]
+}
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+- Restart Anki
 
-```sh
-npm run lint
-```
+### 3. Keep Anki open
+
+Anki must be running in the background for AnkiConnect to work. With Anki open and the app running locally, the **Export to Anki** button will appear on the flashcard form.
+
+---
+
+## Tech Stack
+
+- **Vue 3** with TypeScript and Composition API
+- **Vite** for bundling
+- **Pinia** for state management
+- **Jisho API** for Japanese dictionary lookups
+- **MyMemory API** for translations
+- **Azure Computer Vision** for image OCR
+- **AnkiConnect** for direct Anki integration
