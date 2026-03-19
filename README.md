@@ -2,7 +2,7 @@
 
 A Japanese flashcard maker that lets you take pictures of Japanese text or paste sentences, select target words, and export cards directly to Anki or as a CSV for any SRS app.
 
-**Live app: https://cardsnap.vercel.app**
+**Live app: https://card-snap-helper.vercel.app**
 
 ---
 
