@@ -68,6 +68,7 @@ async function handleImageUpload(event: Event) {
   padding: 24px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 .upload-label {
   flex: 1;

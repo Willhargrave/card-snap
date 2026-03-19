@@ -177,8 +177,6 @@ async function handleExport() {
       <p style="color: red; font-size: 0.85rem;">{{ error }}</p>
     </div>
 
-
-
 <button class="back-btn" @click="emit('back')">← Back</button>
 <div v-if="isLocal">
   <label>Deck</label>
@@ -224,6 +222,10 @@ async function handleExport() {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 .field {
   display: flex;

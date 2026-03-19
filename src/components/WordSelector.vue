@@ -44,7 +44,7 @@ function handleProceed() {
 </script>
 
 <template>
-  <div>
+  <div class="word-selector">
     <p>Click your target words:</p>
     <div>
       <span
@@ -78,6 +78,15 @@ span {
   border: 1px solid #ccc;
   margin: 2px;
   display: inline-block;
+}
+.word-selector {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 span:hover {
   border-color: #ffd700;

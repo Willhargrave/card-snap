@@ -35,7 +35,7 @@ function handleWordsSelect(words: string[], fullSentence: string) {
 <template>
     <header class="header">
     <div class="header-content">
-      <h1 class="header-logo">CardSnap</h1>
+      <h1 class="header-logo" @click="currentStep = 'input'">CardSnap</h1>
       <div class="header-links">
       <a
       href="mailto:cardsnap26@gmail.com"
@@ -125,7 +125,12 @@ function handleWordsSelect(words: string[], fullSentence: string) {
 .header-logo {
   margin: 0;
   font-size: 1.2rem;
+  cursor: pointer;
 }
+.header-logo:hover {
+  opacity: 0.7;
+}
+
 .github-btn {
   display: flex;
   align-items: center;
@@ -195,6 +200,8 @@ function handleWordsSelect(words: string[], fullSentence: string) {
   border-radius: 8px;
   padding: 24px;
   margin-bottom: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
 }
 .explainer h1 {
   margin: 0 0 16px 0;
